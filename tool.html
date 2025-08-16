@@ -1,0 +1,374 @@
+
+
+
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Requirements Engineering Tool • Azure DevOps</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;line-height:1.6;color:#1a1d29;
+         background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;padding:20px}
+    .container{max-width:1200px;margin:0 auto;background:#fff;border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+    .header{background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);color:#fff;padding:60px 40px;text-align:center;position:relative;overflow:hidden}
+    .header::before{content:'';position:absolute;top:-50%;right:-50%;width:200%;height:200%;background:radial-gradient(circle,rgba(255,255,255,.12) 0%,transparent 70%);animation:pulse 15s ease-in-out infinite}
+    @keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+    .header h1{font-size:48px;font-weight:800;margin-bottom:14px;position:relative;z-index:1;text-shadow:2px 2px 4px rgba(0,0,0,.2)}
+    .header .subtitle{font-size:20px;opacity:.96;font-weight:300;position:relative;z-index:1}
+    .version-badge{display:inline-block;background:rgba(255,255,255,.22);padding:8px 20px;border-radius:20px;margin-top:18px;font-size:14px;backdrop-filter:blur(10px);position:relative;z-index:1}
+    .nav{background:#f8fafc;padding:20px 40px;border-bottom:1px solid #e2e8f0;position:sticky;top:0;z-index:100;backdrop-filter:blur(10px)}
+    .nav ul{list-style:none;display:flex;gap:26px;flex-wrap:wrap;justify-content:center}
+    .nav a{color:#64748b;text-decoration:none;font-weight:600;transition:.25s;padding:8px 14px;border-radius:8px}
+    .nav a:hover{color:#667eea;background:rgba(102,126,234,.1)}
+    .content{padding:40px}
+    .section{margin-bottom:60px;scroll-margin-top:100px}
+    .section h2{font-size:32px;font-weight:800;color:#1a1d29;margin-bottom:24px;padding-bottom:12px;
+      background:linear-gradient(135deg,#667eea,#764ba2);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .section h3{font-size:24px;font-weight:700;color:#334155;margin:26px 0 14px}
+    .section h4{font-size:18px;font-weight:700;color:#475569;margin:16px 0 12px}
+    .feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:26px;margin:20px 0}
+    .feature-card{background:linear-gradient(135deg,#f8fafc,#f1f5f9);padding:26px;border-radius:16px;border-left:4px solid #667eea;transition:.3s}
+    .feature-card:hover{transform:translateY(-5px);box-shadow:0 10px 30px rgba(0,0,0,.1)}
+    .feature-card h4{color:#667eea;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+    .icon{font-size:24px}
+    .workflow-diagram{background:#f8fafc;padding:30px;border-radius:16px;margin:20px 0;text-align:center}
+    .workflow-steps{display:flex;justify-content:space-between;align-items:center;margin:24px 0;position:relative}
+    .workflow-steps::before{content:'';position:absolute;top:50%;left:10%;right:10%;height:2px;background:linear-gradient(90deg,#667eea,#764ba2);z-index:1}
+    .workflow-step{background:#fff;border:3px solid #667eea;border-radius:50%;width:80px;height:80px;display:flex;align-items:center;justify-content:center;
+                   font-weight:800;font-size:22px;color:#667eea;position:relative;z-index:2}
+    .workflow-step-label{position:absolute;bottom:-38px;left:50%;transform:translateX(-50%);font-size:12px;font-weight:700;color:#64748b;white-space:nowrap}
+    .code-block{background:#1e293b;color:#e2e8f0;padding:22px;border-radius:12px;margin:14px 0;overflow-x:auto;font-family:'Courier New',monospace;font-size:14px;line-height:1.6;position:relative}
+    .code-block::before{content:attr(data-language);position:absolute;top:10px;right:10px;background:rgba(102,126,234,.22);color:#94a3b8;padding:4px 12px;border-radius:6px;font-size:11px;font-weight:800;text-transform:uppercase}
+    .highlight{background:linear-gradient(135deg,rgba(102,126,234,.1),rgba(118,75,162,.1));padding:18px;border-radius:12px;border-left:4px solid #667eea;margin:14px 0}
+    .api-endpoint{background:#f0f9ff;border:1px solid #0ea5e9;padding:18px;border-radius:12px;margin:14px 0}
+    .api-endpoint h5{color:#0284c7;margin-bottom:8px;font-size:16px}
+    .method-badge{display:inline-block;padding:4px 12px;border-radius:6px;font-weight:800;font-size:12px;margin-right:10px}
+    .method-post{background:#10b981;color:#fff}.method-get{background:#3b82f6;color:#fff}
+    .table-container{overflow-x:auto;margin:14px 0}
+    table{width:100%;border-collapse:collapse;background:#fff;border-radius:12px;overflow:hidden}
+    th{background:linear-gradient(135deg,#667eea,#764ba2);color:#fff;padding:12px;text-align:left;font-weight:800}
+    td{padding:12px;border-bottom:1px solid #e2e8f0}
+    tr:hover{background:#f8fafc}
+    .alert{padding:18px;border-radius:12px;margin:14px 0;display:flex;align-items:flex-start;gap:12px}
+    .alert-info{background:#eff6ff;border-left:4px solid #3b82f6;color:#1e40af}
+    .alert-warning{background:#fffbeb;border-left:4px solid #f59e0b;color:#92400e}
+    .alert-success{background:#f0fdf4;border-left:4px solid #10b981;color:#166534}
+    .footer{background:#0f172a;color:#94a3b8;padding:28px;text-align:center}
+    .footer a{color:#667eea;text-decoration:none}
+    .pill{display:inline-block;background:#ecfeff;color:#155e75;border:1px solid #06b6d4;padding:6px 10px;border-radius:999px;font-size:12px;font-weight:800;margin-right:8px}
+    ul.keylist{margin-left:20px;margin-top:10px}
+    @media print{body{background:#fff;padding:0}.container{box-shadow:none}.nav{display:none}.section{page-break-inside:avoid}}
+    @media (max-width:768px){.header h1{font-size:32px}.workflow-steps{flex-direction:column;gap:40px}.workflow-steps::before{top:10%;bottom:10%;left:50%;width:2px;height:auto}.feature-grid{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>AI Requirements Engineering Tool</h1>
+      <p class="subtitle">Sistema Intelligente per l'Analisi e Miglioramento dei Requisiti</p>
+      <div class="version-badge">LinkedIn Edition • Release 4.0</div>
+    </div>
+
+    <nav class="nav">
+      <ul>
+        <li><a href="#overview">Overview</a></li>
+        <li><a href="#architettura">Architettura</a></li>
+        <li><a href="#workflow">Workflow</a></li>
+        <li><a href="#funzionalita">Funzionalità</a></li>
+        <li><a href="#config">Configurabilità</a></li>
+        <li><a href="#api">API Reference</a></li>
+        <li><a href="#sicurezza">Sicurezza</a></li>
+        <li><a href="#implementazione">Adozione & Implementazione</a></li>
+        <li><a href="#limitazioni">Limitazioni & Roadmap</a></li>
+      </ul>
+    </nav>
+
+    <div class="content">
+
+      <!-- OVERVIEW -->
+      <section id="overview" class="section">
+        <h2>📋 Overview</h2>
+        <p style="font-size:18px;line-height:1.8;margin-bottom:20px">
+          L'<strong>AI Agent</strong> integra l'Intelligenza Artificiale dentro <strong>Azure DevOps</strong> per aiutare i PM a
+          <strong>analizzare</strong> i requisiti, <strong>migliorarli</strong> e generare <strong>Acceptance Criteria</strong> in stile
+          Given/When/Then, applicandoli direttamente al Work Item — con <em>overall score</em> e suggerimenti <em>actionables</em>.
+        </p>
+
+        <div class="feature-grid">
+          <div class="feature-card">
+            <h4><span class="icon">🎯</span> Outcome</h4>
+            <p>Requisiti più chiari, testabili e consistenti; AC di qualità e pronti per lo sviluppo.</p>
+          </div>
+          <div class="feature-card">
+            <h4><span class="icon">⚡</span> Impatto</h4>
+            <p>Riduzione del tempo di review, meno ambiguità, meno cicli di chiarimento, maggiore qualità.</p>
+          </div>
+          <div class="feature-card">
+            <h4><span class="icon">🔗</span> Integrazione</h4>
+            <p>Tab personalizzato in Boards, integrazione REST con ADO, backend serverless su Azure Functions.</p>
+          </div>
+        </div>
+
+        <div class="highlight">
+          <h4>Caratteristiche chiave</h4>
+          <ul class="keylist">
+            <li>Analisi AI con <strong>Overall Score</strong> e breakdown su completezza/clarità/testabilità</li>
+            <li>Generazione AC <strong>coerenti</strong> e <strong>formattati HTML</strong> per Azure DevOps</li>
+            <li>Editor guidato con suggerimenti; applicazione AC al WI con <strong>marker</strong> e <strong>idempotenza</strong></li>
+            <li>Check coerenza tra descrizione e AC quando rilevante</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- ARCHITETTURA -->
+      <section id="architettura" class="section">
+        <h2>🏗️ Architettura su Azure</h2>
+        <div class="feature-grid">
+          <div class="feature-card"><h4>Frontend (Extension)</h4><p>UI a step: Analizza → Modifica → Genera AC → Applica. Badge qualità da Overall Score.</p><span class="pill">Boards</span><span class="pill">Toast & Modali</span><span class="pill">Status</span></div>
+          <div class="feature-card"><h4>Azure Function App</h4><p>Endpoint: <em>generate_preview</em>, <em>apply_acceptance_criteria</em>, <em>check_coherence</em>. Normalizza input, chiama LLM, formatta output.</p><span class="pill">Serverless</span><span class="pill">Autoscaling</span></div>
+          <div class="feature-card"><h4>AI Engine</h4><p>Azure OpenAI / LLM per analisi e generazione AC, con output JSON validato.</p><span class="pill">JSON mode</span><span class="pill">Schema</span></div>
+          <div class="feature-card"><h4>Storage & Telemetry</h4><p>Log/metriche su Storage o App Insights; Key Vault per secret (roadmap AAD completo).</p><span class="pill">Audit</span><span class="pill">Observability</span></div>
+        </div>
+      </section>
+
+      <!-- WORKFLOW -->
+      <section id="workflow" class="section">
+        <h2>🔄 Workflow Operativo Dettagliato</h2>
+
+        <h3>Step 1: Analisi AI Professionale</h3>
+        <div class="highlight">
+          <p><strong>Obiettivo:</strong> Valutare la qualità del requirement corrente</p>
+          <ul class="keylist">
+            <li>Estrazione del requirement dal Work Item</li>
+            <li>Invio al motore AI per analisi professionale</li>
+            <li>Scoring su completezza, chiarezza e testabilità</li>
+            <li>Identificazione punti di forza e debolezza</li>
+            <li>Generazione di suggerimenti <em>actionable</em></li>
+          </ul>
+        </div>
+
+        <h3>Step 2: Modifica Guidata dal Feedback AI</h3>
+        <div class="highlight">
+          <p><strong>Obiettivo:</strong> Migliorare il requirement con i suggerimenti AI</p>
+          <ul class="keylist">
+            <li>Editor con suggerimenti AI visibili</li>
+            <li>Contatore caratteri in tempo reale</li>
+            <li>Pre-popolazione con testo corrente</li>
+            <li>Salvataggio diretto nel Work Item</li>
+            <li>Opzione <em>skip</em> per requirement già buoni</li>
+          </ul>
+        </div>
+
+        <h3>Step 3: Generazione Criteri di Accettazione Smart</h3>
+        <div class="highlight">
+          <p><strong>Obiettivo:</strong> Creare AC completi e testabili</p>
+          <ul class="keylist">
+            <li>Analisi del requirement migliorato</li>
+            <li>Generazione AC in formato Given/When/Then</li>
+            <li>Rilevamento e rimozione duplicati</li>
+            <li>Massimo 5 AC prioritari</li>
+            <li>Verifica copertura scenari</li>
+          </ul>
+        </div>
+
+        <h3>Step 4: Applicazione al Work Item</h3>
+        <div class="highlight">
+          <p><strong>Obiettivo:</strong> Salvare i miglioramenti in Azure DevOps</p>
+          <ul class="keylist">
+            <li>Selezione AC da applicare</li>
+            <li>Formattazione HTML professionale</li>
+            <li>Merge con AC esistenti (opzionale)</li>
+            <li>Update atomico via API</li>
+            <li>Conferma visuale del successo</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- FUNZIONALITÀ -->
+      <section id="funzionalita" class="section">
+        <h2>⚙️ Funzionalità</h2>
+
+        <h3>Scoring & Qualità</h3>
+        <div class="table-container">
+          <table>
+            <thead><tr><th>Metrica</th><th>Descrizione</th><th>Range</th><th>Impatto</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Completeness</strong></td><td>Copertura aspetti essenziali</td><td>0–100</td><td>Alto</td></tr>
+              <tr><td><strong>Clarity</strong></td><td>Chiarezza, assenza ambiguità</td><td>0–100</td><td>Critico</td></tr>
+              <tr><td><strong>Testability</strong></td><td>Facilità di validazione</td><td>0–100</td><td>Medio</td></tr>
+              <tr><td><strong>Overall Score</strong></td><td>Valutazione complessiva</td><td>0–100</td><td>Critico</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>Acceptance Criteria – Formato</h3>
+        <div class="code-block" data-language="Gherkin">
+Given [precondizione]
+When  [azione]
+Then  [risultato atteso]
+
+Esempio:
+Given utente autenticato
+When clicca "Salva Bozza"
+Then il documento è salvato come "Bozza"
+  And appare un messaggio di conferma
+        </div>
+
+        <h3>Tracking AI</h3>
+        <div class="feature-grid">
+          <div class="feature-card"><h4>Marker & Timestamp</h4><p>Inserimento marker HTML per audit (AI-APPLIED, AI-TIMESTAMP, AI-HASH).</p></div>
+          <div class="feature-card"><h4>Idempotenza</h4><p>Evita applicazioni duplicate tramite hash del contenuto generato.</p></div>
+          <div class="feature-card"><h4>Coherence Check</h4><p>Controllo di allineamento tra descrizione e AC dopo modifiche.</p></div>
+        </div>
+      </section>
+
+      <!-- CONFIGURABILITÀ -->
+      <section id="config" class="section">
+        <h2>🧩 Configurabilità</h2>
+        <div class="feature-grid">
+          <div class="feature-card"><h4>Pesi & Soglie</h4><p>Personalizzazione dei criteri delle metriche e delle soglie per i badge qualità.</p></div>
+          <div class="feature-card"><h4>Template AC</h4><p>Formato Given/When/Then, numero massimo, regole di deduplica e naming.</p></div>
+          <div class="feature-card"><h4>Lingua & Tono</h4><p>Impostazioni di lingua (IT/EN), formalità e terminologia di dominio.</p></div>
+          <div class="feature-card"><h4>Policy</h4><p>Scope per progetto/area, ruoli autorizzati, retention e anonimizzazione.</p></div>
+        </div>
+      </section>
+
+      <!-- API REFERENCE -->
+      <section id="api" class="section">
+        <h2>🔌 API Reference</h2>
+
+        <div class="api-endpoint">
+          <h5><span class="method-badge method-get">GET</span> /api/health</h5>
+          <p><strong>Descrizione:</strong> Health check dell'applicazione</p>
+          <div class="code-block" data-language="JSON">
+{
+  "status": "healthy",
+  "version": "4.0",
+  "features": ["requirement_analysis","smart_ac_generation","coherence_check","html_formatting"],
+  "timestamp": "2025-08-16T10:30:00Z"
+}
+          </div>
+        </div>
+
+        <div class="api-endpoint">
+          <h5><span class="method-badge method-post">POST</span> /api/generate_preview</h5>
+          <p><strong>Descrizione:</strong> Analisi requisito + proposta AC (estratto)</p>
+          <div class="code-block" data-language="JSON">
+{
+  "requirementAnalysis": {
+    "analysisType": "good",
+    "overallScore": 75,
+    "strengths": [],
+    "improvements": [],
+    "suggestions": [],
+    "criticalIssues": [],
+    "scores": { "completeness": 70, "clarity": 80, "testability": 75 },
+    "validations": { "hasTitle": {"pass": true} }
+  },
+  "newAcceptanceCriteria": ["Given ..., When ..., Then ..."]
+}
+          </div>
+        </div>
+
+        <div class="api-endpoint">
+          <h5><span class="method-badge method-post">POST</span> /api/apply_acceptance_criteria</h5>
+          <p><strong>Descrizione:</strong> Applica gli AC selezionati al Work Item</p>
+          <div class="code-block" data-language="JSON">
+{
+  "workItemId": 12345,
+  "acceptanceCriteria": ["Given ..., When ..., Then ..."],
+  "selectedAcceptanceCriteria": [0, 2],
+  "preserveExisting": true
+}
+          </div>
+        </div>
+
+        <div class="api-endpoint">
+          <h5><span class="method-badge method-post">POST</span> /api/check_coherence</h5>
+          <p><strong>Descrizione:</strong> Verifica coerenza tra descrizione e AC</p>
+          <div class="code-block" data-language="JSON">
+{
+  "description": "Testo del requirement",
+  "acceptanceCriteria": ["AC 1", "AC 2"]
+}
+          </div>
+        </div>
+
+        <h3>Codici di Errore (principali)</h3>
+        <div class="table-container">
+          <table>
+            <thead><tr><th>Codice</th><th>Significato</th><th>Azione Suggerita</th></tr></thead>
+            <tbody>
+              <tr><td><strong>400</strong></td><td>Parametri mancanti/invalidi</td><td>Verifica il payload e i tipi</td></tr>
+              <tr><td><strong>401</strong></td><td>Autenticazione assente/non valida</td><td>Rinnovo delle credenziali</td></tr>
+              <tr><td><strong>404</strong></td><td>Work Item non trovato</td><td>Controllo dell'ID fornito</td></tr>
+              <tr><td><strong>429</strong></td><td>Rate limit raggiunto</td><td>Backoff temporizzato e retry</td></tr>
+              <tr><td><strong>500</strong></td><td>Errore interno</td><td>Analisi dei log/telemetria</td></tr>
+              <tr><td><strong>502</strong></td><td>Errore upstream (ADO/OpenAI)</td><td>Verifica dipendenze e nuovo tentativo</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SICUREZZA -->
+      <section id="sicurezza" class="section">
+        <h2>🔐 Sicurezza & Best Practice</h2>
+        <div class="feature-grid">
+          <div class="feature-card"><h4>Key Vault & Managed Identity</h4><p>Gestione sicura dei secret con accesso applicativo senza credenziali nel codice.</p></div>
+          <div class="feature-card"><h4>Azure AD / EasyAuth</h4><p>Autenticazione/Autorizzazione centralizzate; eliminazione di function key nel frontend.</p></div>
+          <div class="feature-card"><h4>Application Insights</h4><p>Telemetria, tracing distribuito e alerting per affidabilità e osservabilità.</p></div>
+          <div class="feature-card"><h4>Principio del Minimo Privilegio</h4><p>Permessi ristretti per PAT/ADO e risorse Azure in base al ruolo.</p></div>
+        </div>
+      </section>
+
+      <!-- ADOZIONE & IMPLEMENTAZIONE -->
+      <section id="implementazione" class="section">
+        <h2>🚀 Adozione & Implementazione</h2>
+        <div class="feature-grid">
+          <div class="feature-card">
+            <h4>1) Backend su Azure</h4>
+            <ul class="keylist">
+              <li>Distribuzione di una <strong>Function App (Python)</strong> con endpoint REST pubblici/protetti.</li>
+              <li>Configurazione variabili ambiente: ADO_ORG_URL, credenziali verso ADO, chiave AI.</li>
+              <li>Opzionale: integrazione con <strong>Key Vault</strong>, <strong>Application Insights</strong>, <strong>Service Bus</strong>.</li>
+            </ul>
+          </div>
+          <div class="feature-card">
+            <h4>2) Estensione per Azure DevOps</h4>
+            <ul class="keylist">
+              <li>Pacchetto con <em>vss-extension.json</em> e asset statici (HTML/CSS/JS).</li>
+              <li>Pubblicazione su marketplace privato e installazione nell’organizzazione.</li>
+              <li>Aggiunta del tab al <strong>Work Item Type</strong> (form page contribution).</li>
+            </ul>
+          </div>
+          <div class="feature-card">
+            <h4>3) Integrazione & Governance</h4>
+            <ul class="keylist">
+              <li>Definizione <strong>SLA</strong> e limiti (quota AI, rate limit ADO), politiche di retry/backoff.</li>
+              <li>Linee guida su <strong>privacy</strong>, <strong>tracciabilità</strong> e gestione dei dati.</li>
+              <li>Rollout progressivo per progetto/team con feedback ciclico.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- LIMITAZIONI & ROADMAP -->
+      <section id="limitazioni" class="section">
+        <h2>⚠️ Limitazioni attuali & 🚀 Roadmap</h2>
+        <div class="feature-grid">
+          <div class="feature-card"><h4>Oggi (Limitazioni)</h4><ul class="keylist"><li>Function key lato FE in alcune implementazioni</li><li>Retry backend da rafforzare su transienti/429</li><li>Idempotenza “light” per conflitti rari</li><li>Editor: undo/redo e crash recovery non inclusi</li></ul></div>
+          <div class="feature-card"><h4>Prossimi passi (Tecnici)</h4><ul class="keylist"><li>EasyAuth/APIM con Key Vault e rimozione completa di key lato client</li><li>Service Bus per load leveling</li><li>JSON mode + schema validation</li><li>Dashboard KPI in App Insights</li></ul></div>
+          <div class="feature-card"><h4>Prossimi passi (UX/Logica)</h4><ul class="keylist"><li>Template AC di dominio & knowledge base</li><li>Undo/Redo; sessioni; autosave</li><li>Virtualization per liste AC estese</li><li>Metriche qualità a livello progetto</li></ul></div>
+        </div>
+      </section>
+
+    </div>
+
+    <div class="footer">
+      © 2025 – AI Requirements Engineering Tool • Azure DevOps
+    </div>
+  </div>
+</body>
+</html>
